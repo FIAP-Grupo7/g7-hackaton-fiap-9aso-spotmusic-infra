@@ -21,3 +21,13 @@ resource "google_sql_database_instance" "main" {
     tier = "db-f1-micro"
   }
 }
+
+data "google_secret_manager_secret_version" "mysql_password" {
+ secret   = "MYSQL_PASSWORD"
+}
+
+resource "google_sql_user" "users" {
+  name     = "playuser"
+  instance = google_sql_database_instance.main.name
+  password = data.google_secret_manager_secret_version.mysql_password.secret_data
+}
